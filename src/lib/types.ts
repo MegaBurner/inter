@@ -19,6 +19,7 @@ export interface FavoriteLocation {
 export interface ARNavigationState {
   status: 'idle' | 'prompt_destination' | 'navigating' | 'obstacle_alert' | 'rerouting' | 'arrived';
   destination?: string;
+  accessibilityNeeds?: string; // Added for storing accessibility preferences
   currentInstruction?: string;
   obstacleMessage?: string;
   eta?: string;

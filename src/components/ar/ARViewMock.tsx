@@ -14,7 +14,7 @@ export default function ARViewMock({ navigationState }: ARViewMockProps) {
     switch (navigationState.status) {
       case 'navigating':
         return (
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/70 text-white p-4 rounded-lg shadow-xl text-center">
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/70 text-white p-4 rounded-lg shadow-xl text-center w-11/12 sm:w-auto">
             <ArrowUp size={48} className="mx-auto mb-2" />
             <p className="text-lg font-semibold">{navigationState.currentInstruction || "Proceed straight 50m"}</p>
             {navigationState.eta && <p className="text-sm">ETA: {navigationState.eta}</p>}
@@ -38,7 +38,7 @@ export default function ARViewMock({ navigationState }: ARViewMockProps) {
         );
       case 'rerouting':
          return (
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/70 text-white p-4 rounded-lg shadow-xl text-center">
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/70 text-white p-4 rounded-lg shadow-xl text-center  w-11/12 sm:w-auto">
             <Navigation size={48} className="mx-auto mb-2 animate-pulse" />
             <p className="text-lg font-semibold">Rerouting...</p>
             <p className="text-sm">{navigationState.currentInstruction || "Please wait."}</p>
@@ -55,6 +55,9 @@ export default function ARViewMock({ navigationState }: ARViewMockProps) {
               </CardHeader>
               <CardContent>
                 <p className="text-lg font-semibold">Destination: {navigationState.destination}</p>
+                {navigationState.accessibilityNeeds && (
+                  <p className="text-sm mt-1">Accessibility needs considered: {navigationState.accessibilityNeeds}</p>
+                )}
                 <CheckCircle size={40} className="mx-auto mt-4 text-green-300" />
               </CardContent>
             </Card>
@@ -79,9 +82,9 @@ export default function ARViewMock({ navigationState }: ARViewMockProps) {
         REC ●
       </div>
       {navigationState.destination && navigationState.status !== 'idle' && navigationState.status !== 'prompt_destination' && (
-        <div className="absolute top-4 right-4 bg-black/70 text-white p-2 rounded-md shadow">
-            <p className="text-xs font-medium">Destination:</p>
-            <p className="text-sm font-semibold truncate max-w-[150px]">{navigationState.destination}</p>
+        <div className="absolute top-4 right-4 bg-black/70 text-white p-2 rounded-md shadow text-xs max-w-[180px]">
+            <p className="font-medium">To: <span className="font-semibold truncate block">{navigationState.destination}</span></p>
+            {navigationState.accessibilityNeeds && <p className="mt-1 font-medium">Needs: <span className="font-semibold truncate block">{navigationState.accessibilityNeeds}</span></p>}
         </div>
       )}
       {getGuidanceContent()}
