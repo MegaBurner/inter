@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ARNavigationState } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ARViewMock from '@/components/ar/ARViewMock';
-import { Wand2, Map as MapIcon, Search, CornerUpRight, Route, Edit } from 'lucide-react';
+import { Wand2, Map as MapIcon, Search, CornerUpRight, Route, Edit, Navigation } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 
@@ -34,7 +34,7 @@ export default function CampusNavigationPage() {
     setIsRoutePreview(true);
     toast({
         title: "Route Preview Ready",
-        description: `Showing preview for: ${destination}. Click 'AR Mode' on the map to start.`,
+        description: `Showing preview for: ${destination}. Tap the AR button on the map to start.`,
       });
   };
 
@@ -89,94 +89,85 @@ export default function CampusNavigationPage() {
     setNavigationState(prev => ({ ...prev, status: 'arrived' }));
   };
 
+  // Effect to clear route preview if destination or needs change
+  useEffect(() => {
+    if (isRoutePreview) {
+      setIsRoutePreview(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [destination, accessibilityNeeds]);
+
+
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold tracking-tight text-center">Campus Navigation</h2>
+      <h2 className="text-3xl font-bold tracking-tight text-center sr-only">Campus Navigation</h2>
       
       {viewMode === 'map' && (
         <div className="relative w-full aspect-[3/4] md:aspect-video max-w-4xl mx-auto rounded-lg overflow-hidden shadow-xl border">
-          {/* Input Card - absolutely positioned */}
-          <Card className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-[90%] max-w-md bg-background/95 backdrop-blur-sm shadow-xl">
-            <CardHeader className="pb-3 pt-4">
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <MapIcon size={20} /> Plan Your Route
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Enter destination, preview, then tap AR Mode on map.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 py-3">
-              <div className="relative">
-                <Label htmlFor="destination" className="sr-only">Destination</Label>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input
-                  id="destination"
-                  value={destination}
-                  onChange={(e) => { 
-                    setDestination(e.target.value); 
-                    if (isRoutePreview) setIsRoutePreview(false); 
-                  }}
-                  placeholder="Search (e.g., Lecture Hall A101)"
-                  className="pl-9 h-9 text-sm"
-                  disabled={isRoutePreview && viewMode === 'map'}
-                />
-              </div>
-              <div>
-                <Label htmlFor="accessibilityNeeds" className="sr-only">Accessibility Needs</Label>
-                <Input
-                  id="accessibilityNeeds"
-                  value={accessibilityNeeds}
-                  onChange={(e) => { 
-                    setAccessibilityNeeds(e.target.value); 
-                    if (isRoutePreview) setIsRoutePreview(false); 
-                  }}
-                  placeholder="Accessibility needs (e.g., avoid stairs)"
-                  className="mt-1 h-9 text-sm"
-                  disabled={isRoutePreview && viewMode === 'map'}
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="pt-3 pb-4">
-              {!isRoutePreview ? (
-                <Button onClick={handleShowRoutePreview} className="w-full btn-interactive h-9 text-sm">
-                  <Route className="mr-2 h-4 w-4" /> Show Route Preview
-                </Button>
-              ) : (
-                <Button onClick={() => setIsRoutePreview(false)} className="w-full h-9 text-sm" variant="outline">
-                  <Edit className="mr-2 h-4 w-4" /> Modify Details
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
+          {/* Top Input Bar */}
+          <div className="absolute top-4 left-4 right-4 z-20 bg-background/90 backdrop-blur-sm rounded-lg shadow-xl p-3 sm:p-4 space-y-3">
+            <div className="relative">
+              <Label htmlFor="destination" className="sr-only">Destination</Label>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Input
+                id="destination"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                placeholder="Search destination (e.g., Lecture Hall A101)"
+                className="pl-9 h-10 text-sm sm:text-base"
+                disabled={isRoutePreview && viewMode === 'map'}
+              />
+            </div>
+            <div>
+              <Label htmlFor="accessibilityNeeds" className="sr-only">Accessibility Needs</Label>
+              <Input
+                id="accessibilityNeeds"
+                value={accessibilityNeeds}
+                onChange={(e) => setAccessibilityNeeds(e.target.value)}
+                placeholder="Accessibility needs (e.g., avoid stairs)"
+                className="h-10 text-sm sm:text-base"
+                disabled={isRoutePreview && viewMode === 'map'}
+              />
+            </div>
+            {!isRoutePreview ? (
+              <Button onClick={handleShowRoutePreview} className="w-full btn-interactive h-10 text-sm sm:text-base">
+                <Route className="mr-2 h-4 w-4" /> Show Route Preview
+              </Button>
+            ) : (
+              <Button onClick={() => setIsRoutePreview(false)} className="w-full h-10 text-sm sm:text-base" variant="outline">
+                <Edit className="mr-2 h-4 w-4" /> Modify Details
+              </Button>
+            )}
+          </div>
 
           {/* Map Image - fills the container */}
           <Image
-            src="https://placehold.co/1200x675.png"
+            src="https://placehold.co/1200x900.png" // Adjusted for taller aspect ratio
             alt="Campus Map Placeholder"
             layout="fill"
             objectFit="cover"
             data-ai-hint="university campus map aerial"
             priority
+            className="z-10"
           />
 
           {/* Route Preview Info - absolutely positioned */}
           {isRoutePreview && destination && (
-            <div className="absolute top-4 left-4 bg-black/75 text-white p-3 rounded-md shadow-lg space-y-1 text-sm max-w-[calc(100%-3rem)] z-10">
+            <div className="absolute top-[calc(4rem+4rem+3rem)] sm:top-[calc(4.5rem+4.5rem+3rem)] left-4 bg-black/75 text-white p-2 sm:p-3 rounded-md shadow-lg space-y-1 text-xs sm:text-sm max-w-[calc(100%-3rem)] z-20">
               <p className="font-semibold">Previewing Route:</p>
               <p><span className="font-medium">To:</span> {destination}</p>
               <p><span className="font-medium">Needs:</span> {accessibilityNeeds || 'None'}</p>
             </div>
           )}
 
-          {/* AR Mode Button - absolutely positioned */}
+          {/* AR Mode FAB */}
           <Button
             onClick={handleStartAR}
-            className="absolute bottom-6 right-6 btn-interactive shadow-xl"
-            size="lg"
+            className="absolute bottom-6 right-6 z-20 rounded-full w-14 h-14 sm:w-16 sm:h-16 p-0 flex items-center justify-center shadow-xl btn-interactive"
             aria-label="Switch to AR Mode"
-            disabled={!isRoutePreview} 
+            disabled={!isRoutePreview || !destination} 
           >
-            <CornerUpRight className="mr-2 h-5 w-5" /> AR Mode
+            <CornerUpRight size={24} smSize={28} />
           </Button>
         </div>
       )}
@@ -203,11 +194,10 @@ export default function CampusNavigationPage() {
             <CardTitle>How to Use Campus Navigation</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p>1. Enter your destination and any accessibility preferences in the form overlaid on the map.</p>
-            <p>2. Click "Show Route Preview" to confirm your details. The route info will appear on the map.</p>
-            <p>3. Tap the "AR Mode" button (bottom-right on the map) to enter augmented reality navigation.</p>
-            <p>4. Hold your phone up and follow the on-screen guidance.</p>
-            <p>5. The app will alert you to obstacles and suggest alternative routes if needed.</p>
+            <p>1. Enter your destination and any accessibility preferences in the search bar at the top of the map.</p>
+            <p>2. Click "Show Route Preview" to confirm. Route details will appear overlaid on the map.</p>
+            <p>3. Tap the AR button (bottom-right on map) to start augmented reality navigation.</p>
+            <p>4. Hold your phone up and follow guidance. The app alerts to obstacles and reroutes if needed.</p>
         </CardContent>
       </Card>
     </div>
