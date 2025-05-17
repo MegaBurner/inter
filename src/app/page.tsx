@@ -94,7 +94,7 @@ export default function CampusNavigationPage() {
       <h2 className="text-3xl font-bold tracking-tight text-center">Campus Navigation</h2>
       
       {viewMode === 'map' && (
-        <div className="relative w-full aspect-video max-w-4xl mx-auto rounded-lg overflow-hidden shadow-xl border">
+        <div className="relative w-full aspect-[3/4] md:aspect-video max-w-4xl mx-auto rounded-lg overflow-hidden shadow-xl border">
           {/* Input Card - absolutely positioned */}
           <Card className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-[90%] max-w-md bg-background/95 backdrop-blur-sm shadow-xl">
             <CardHeader className="pb-3 pt-4">
