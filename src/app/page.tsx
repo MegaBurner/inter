@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -7,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import ARViewMock from '@/components/ar/ARViewMock';
-import { Wand2, Map as MapIcon, Search, CornerUpRight } from 'lucide-react';
+import { Wand2, Map as MapIcon, Search, CornerUpRight, Route, Edit } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 
@@ -18,13 +19,30 @@ export default function CampusNavigationPage() {
     status: 'idle',
   });
   const [viewMode, setViewMode] = useState<'map' | 'ar'>('map');
+  const [isRoutePreview, setIsRoutePreview] = useState(false); // New state for preview mode
   const { toast } = useToast();
 
-  const handleStartNavigation = () => {
+  const handleShowRoutePreview = () => {
     if (!destination) {
       toast({
         title: "Destination Required",
-        description: "Please enter a destination to start navigation.",
+        description: "Please enter a destination to preview the route.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsRoutePreview(true);
+    toast({
+        title: "Route Preview Ready",
+        description: `Showing preview for: ${destination}. Click 'AR Mode' on the map to start.`,
+      });
+  };
+
+  const handleStartAR = () => {
+    if (!destination) {
+      toast({
+        title: "Destination Required",
+        description: "Please enter a destination in the form above and preview the route first.",
         variant: "destructive",
       });
       return;
@@ -34,11 +52,18 @@ export default function CampusNavigationPage() {
       status: 'navigating',
       destination: destination,
       accessibilityNeeds: accessibilityNeeds,
-      currentInstruction: 'Proceed straight 100m',
-      eta: '5 mins'
+      currentInstruction: 'Proceed straight 100m', // Mock instruction
+      eta: '5 mins' // Mock ETA
     });
   };
+  
+  const resetAndShowMap = () => {
+    setViewMode('map');
+    setNavigationState({ status: 'idle' });
+    // isRoutePreview, destination, and accessibilityNeeds are preserved
+  };
 
+  // Mock simulation functions (as they were in the original file)
   const simulateObstacle = () => {
     setNavigationState(prev => ({
       ...prev,
@@ -56,13 +81,6 @@ export default function CampusNavigationPage() {
   const simulateArrival = () => {
     setNavigationState(prev => ({ ...prev, status: 'arrived' }));
   };
-  
-  const resetAndShowMap = () => {
-    // setDestination(''); // Optional: clear destination upon exiting AR
-    // setAccessibilityNeeds(''); // Optional: clear needs
-    setViewMode('map');
-    setNavigationState({ status: 'idle' }); // Reset AR state
-  };
 
   return (
     <div className="space-y-6">
@@ -76,7 +94,7 @@ export default function CampusNavigationPage() {
                 <MapIcon size={24} /> Plan Your Route
               </CardTitle>
               <CardDescription>
-                Enter your destination and any accessibility needs, then start AR navigation or explore the map.
+                Enter your destination and needs, preview the route, then start AR via the map button.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -86,9 +104,13 @@ export default function CampusNavigationPage() {
                 <Input
                   id="destination"
                   value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
+                  onChange={(e) => { 
+                    setDestination(e.target.value); 
+                    if (isRoutePreview) setIsRoutePreview(false); 
+                  }}
                   placeholder="Search for room or location (e.g., Lecture Hall A101)"
                   className="pl-10"
+                  disabled={isRoutePreview && viewMode === 'map'}
                 />
               </div>
               <div>
@@ -96,16 +118,26 @@ export default function CampusNavigationPage() {
                 <Input
                   id="accessibilityNeeds"
                   value={accessibilityNeeds}
-                  onChange={(e) => setAccessibilityNeeds(e.target.value)}
+                  onChange={(e) => { 
+                    setAccessibilityNeeds(e.target.value); 
+                    if (isRoutePreview) setIsRoutePreview(false); 
+                  }}
                   placeholder="e.g., avoid stairs, prefer ramps"
                   className="mt-1"
+                  disabled={isRoutePreview && viewMode === 'map'}
                 />
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleStartNavigation} className="w-full btn-interactive">
-                <Wand2 className="mr-2 h-4 w-4" /> Start AR Navigation
-              </Button>
+              {!isRoutePreview ? (
+                <Button onClick={handleShowRoutePreview} className="w-full btn-interactive">
+                  <Route className="mr-2 h-4 w-4" /> Show Route Preview
+                </Button>
+              ) : (
+                <Button onClick={() => setIsRoutePreview(false)} className="w-full" variant="outline">
+                  <Edit className="mr-2 h-4 w-4" /> Modify Details
+                </Button>
+              )}
             </CardFooter>
           </Card>
 
@@ -118,11 +150,19 @@ export default function CampusNavigationPage() {
               data-ai-hint="university campus map"
               priority
             />
+            {isRoutePreview && destination && (
+              <div className="absolute top-4 left-4 bg-black/70 text-white p-3 rounded-md shadow-lg space-y-1 text-sm max-w-[calc(100%-2rem)]">
+                <p className="font-semibold">Previewing Route:</p>
+                <p><span className="font-medium">To:</span> {destination}</p>
+                <p><span className="font-medium">Needs:</span> {accessibilityNeeds || 'None'}</p>
+              </div>
+            )}
             <Button
-              onClick={handleStartNavigation}
+              onClick={handleStartAR}
               className="absolute bottom-4 right-4 btn-interactive shadow-md"
               size="lg"
               aria-label="Switch to AR Mode"
+              disabled={!destination && !isRoutePreview} // Disable if no destination set for preview
             >
               <CornerUpRight className="mr-2 h-5 w-5" /> AR Mode
             </Button>
@@ -152,10 +192,11 @@ export default function CampusNavigationPage() {
             <CardTitle>How to Use Campus Navigation</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p>1. Enter your destination and any accessibility preferences in the form above the map.</p>
-            <p>2. Tap "Start AR Navigation" or the "AR Mode" button on the map to enter augmented reality.</p>
-            <p>3. Hold your phone up and follow the on-screen guidance projected onto your camera view.</p>
-            <p>4. The app will alert you to obstacles and suggest alternative accessible routes if needed.</p>
+            <p>1. Enter your destination and any accessibility preferences in the form above.</p>
+            <p>2. Click "Show Route Preview" to confirm your details on the map.</p>
+            <p>3. Tap the "AR Mode" button on the map to enter augmented reality navigation.</p>
+            <p>4. Hold your phone up and follow the on-screen guidance.</p>
+            <p>5. The app will alert you to obstacles and suggest alternative routes if needed.</p>
         </CardContent>
       </Card>
     </div>
