@@ -112,11 +112,11 @@ export default function CampusNavigationPage() {
 
 
   return (
-    <div className="space-y-6">
+    <div>
       <h2 className="text-3xl font-bold tracking-tight text-center sr-only">Campus Navigation</h2>
       
       {viewMode === 'map' && (
-        <div className="relative w-full aspect-[3/4] md:aspect-video max-w-4xl mx-auto rounded-lg overflow-hidden shadow-xl border">
+        <div className="relative w-full aspect-[3/4] md:aspect-video mx-auto rounded-lg overflow-hidden shadow-xl border">
           {/* Top Input Bar */}
           <div className="absolute top-4 left-4 right-4 z-20 bg-background/90 backdrop-blur-sm rounded-lg shadow-xl p-3 sm:p-4 space-y-3">
             <div className="relative">
