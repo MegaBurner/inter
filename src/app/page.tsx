@@ -11,6 +11,8 @@ import ARViewMock from '@/components/ar/ARViewMock';
 import { Wand2, Map as MapIcon, Search, CornerUpRight, Route, Edit, Navigation, Info } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
+import { url } from 'inspector';
+import campusMap from '@/assets/campus-map.png';
 
 export default function CampusNavigationPage() {
   const [destination, setDestination] = useState('');
@@ -153,7 +155,8 @@ export default function CampusNavigationPage() {
 
           {/* Map Image - fills the container */}
           <Image
-            src="https://placehold.co/1200x900.png"
+// Suggested code may be subject to a license. Learn more: ~LicenseLog:1735308077.
+            src={campusMap}
             alt="Campus Map Placeholder"
             layout="fill"
             objectFit="cover"
