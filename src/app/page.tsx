@@ -116,9 +116,9 @@ export default function CampusNavigationPage() {
       <h2 className="text-3xl font-bold tracking-tight text-center sr-only">Campus Navigation</h2>
       
       {viewMode === 'map' && (
-        <div className="relative w-full aspect-[3/4] md:aspect-video mx-auto rounded-lg overflow-hidden shadow-xl border">
+        <div className="w-full aspect-[3/4] md:aspect-video mx-auto rounded-lg overflow-hidden shadow-xl border">
           {/* Top Input Bar */}
-          <div className="absolute top-4 left-4 right-4 z-20 bg-background/90 backdrop-blur-sm rounded-lg shadow-xl p-3 sm:p-4 space-y-3">
+          <div className="absolute top-20 left-4 right-4 z-20 bg-background/90 backdrop-blur-sm rounded-lg shadow-xl p-3 sm:p-4 space-y-3">
             <div className="relative">
               <Label htmlFor="destination" className="sr-only">Destination</Label>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -155,7 +155,7 @@ export default function CampusNavigationPage() {
 
           {/* Map Image - fills the container */}
           <Image
-// Suggested code may be subject to a license. Learn more: ~LicenseLog:1735308077.
+            // Suggested code may be subject to a license. Learn more: ~LicenseLog:1735308077.
             src={campusMap}
             alt="Campus Map Placeholder"
             layout="fill"
@@ -177,7 +177,7 @@ export default function CampusNavigationPage() {
           {/* Info Button FAB */}
           <Button
             onClick={() => setShowInfoDialog(true)}
-            className="absolute bottom-6 left-6 z-20 rounded-full w-12 h-12 sm:w-14 sm:h-14 p-0 flex items-center justify-center shadow-xl bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            className="absolute bottom-20 left-6 z-20 rounded-full w-12 h-12 sm:w-14 sm:h-14 p-0 flex items-center justify-center shadow-xl bg-secondary text-secondary-foreground hover:bg-secondary/80"
             aria-label="Show How to Use"
           >
             <Info size={20} smSize={24} />
@@ -187,7 +187,7 @@ export default function CampusNavigationPage() {
           {/* AR Mode FAB */}
           <Button
             onClick={handleStartAR}
-            className="absolute bottom-6 right-6 z-20 rounded-full w-14 h-14 sm:w-16 sm:h-16 p-0 flex items-center justify-center shadow-xl btn-interactive"
+            className="absolute bottom-20  right-6 z-20 rounded-full w-14 h-14 sm:w-16 sm:h-16 p-0 flex items-center justify-center shadow-xl btn-interactive"
             aria-label="Switch to AR Mode"
             disabled={!isRoutePreview || !destination} 
           >

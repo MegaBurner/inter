@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
         <Header />
-        <main className="flex-grow container mx-auto px-4 py-8 mb-16"> {/* mb-16 for bottom nav */}
+        <main className="flex-grow container mx-auto mb-16"> {/* mb-16 for bottom nav */}
           {children}
         </main>
         <BottomNav />
